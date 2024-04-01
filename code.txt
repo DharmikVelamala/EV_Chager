@@ -1,0 +1,1420 @@
+#include<stdio.h>
+#include<string.h>
+#include<conio.h>
+#include<stdlib.h>
+
+int sa=10000;
+int ca=12345;
+
+
+
+void savings_account(void)
+{
+    printf("\nsavings acount balance : %d",sa);
+}
+
+
+void depositing(void)
+{
+    int deposite;
+    printf("\nenter the money you want to deposite : ");
+    scanf("%d",&deposite);
+    sa=sa+deposite;
+    printf("\nsavings acount balance : %d",sa);
+}
+
+void withdrawl(void)
+{
+    int withdraw;
+    printf("\nenter the money you want to withdrwal :");
+    scanf("%d",&withdraw);
+    if(sa!=0 && withdraw <= sa)
+    {
+    sa=sa-withdraw;
+    printf("\nsavings acount balance : %d",sa);
+    }
+    else
+    {
+        printf("\nyou dont have sufficent balance");
+    }
+
+}
+void transfer(void)
+{
+    int tran;
+    printf("\nenter the money you want to transfer from current account to savings account :");
+    scanf("%d",&tran);
+    
+    if(ca!=0 && tran <= ca)
+    {
+        ca=ca-tran;
+        sa=sa+tran;
+        printf("\nsavings acount balance : %d",sa);
+        printf("\ncurrent acount balance : %d",ca);
+    }
+    else
+    {
+        printf("\nyou dont have sufficent balance");
+    }
+    
+}
+
+
+
+
+void main()
+{
+    int choice;
+    char pin[]="1234";
+    char enterpin[5],enterpin1[5];
+    
+    
+    printf("Please enter the pin\n");
+    scanf("%s",enterpin);
+    printf("Please enter the pin again\n");
+    scanf("%s",enterpin1);
+    
+    if (~(strncmp(pin,enterpin,4)) || ~(strncmp(pin,enterpin1,4)))
+    {
+        while(1)
+        {
+            printf("\n1 - for checking savings bank account");
+            printf("\n2 - for depositing money in to the bank account");
+            printf("\n3 - for withdrawl money from the bank account");
+            printf("\n4 - for transfering money from current to savings bank account");
+            
+            printf("\n\nenter the choice you want : ");
+            scanf("%d", &choice);
+            
+            switch (choice) {
+            case 1:
+                savings_account();
+                break;
+         
+            case 2:
+                depositing();
+                break;
+                
+            case 3:
+                withdrawl();
+                break;
+         
+            case 4:
+                transfer();
+                break;
+         
+            default:
+                exit(0);
+                break;
+                getch();
+            }
+        }
+    }
+}
+
+BLE code ############################################################################################################################
+
+import RPi.GPIO as GPIO
+import bluetooth
+import time
+
+# Set up GPIO
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+
+
+def detect_mobile_device():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=1, lookup_names=True)
+    # Check if the target device is in the list of nearby devices
+    for addr, name in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS:
+            return True
+    return False
+
+while 1:
+    if detect_mobile_device():
+        GPIO.output(LED_PIN, GPIO.HIGH)S
+        print("Mobile device detected. LED turned on.")
+    else:
+        GPIO.output(LED_PIN, GPIO.LOW)
+        print("Mobile device not detected. LED turned off.")
+
+
+###########################################################################################################################
+RSSI VALUE
+
+from datetime import datetime
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+
+discovery_time = 5
+log_file = Path('/home/DhananjayRpi/Desktop/log/device4.log')
+
+
+def write_to_log(address, rssi):
+    """Write device and rssi values to a log file"""
+    now = datetime.now()
+    current_time = now.strftime('%H:%M:%S')
+    with log_file.open('a') as dev_log:
+        dev_log.write(f'Device seen[{current_time}]: {address} @ {rssi} dBm\n')
+
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+class DeviceMonitor:
+    """Class to represent remote bluetooth devices discovered"""
+    def __init__(self, path_obj):
+        self.device = bus.get('org.bluez', path_obj)
+#         print(path_obj)
+#         print(self.device)
+        self.device.onPropertiesChanged = self.prop_changed
+        rssi = self.device.GetAll('org.bluez.Device1').get('RSSI')
+        if rssi:
+            print(f'Device added to monitor {self.device.Address} @ {rssi} dBm')
+        else:
+            print(f'Device added to monitor {self.device.Address}')
+
+    def prop_changed(self, iface, props_changed, props_removed):
+        """method to be called when a property value on a device changes"""
+        rssi = props_changed.get('RSSI', None)
+        if rssi is not None:
+            print(f'\tDevice Seen: {self.device.Address} @ {rssi} dBm')
+            write_to_log(self.device.Address, rssi)
+
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    print(path)
+    if device_addr:
+        DeviceMonitor(path)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+
+# Iterate around already known devices and add to monitor
+print('Adding already known device to monitor...')
+mng_objs = mngr.GetManagedObjects()
+
+for path in mng_objs:
+    device = mng_objs[path].get('org.bluez.Device1', {}).get('Address', [])
+    if device:
+        DeviceMonitor(path)
+
+# Run discovery for discovery_time
+adapter.StartDiscovery()
+print("ddddddddddddddddddddddddddddddddddddddddddddddddd")
+GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+###########################################################################################################################################3
+ble.led2
+
+from datetime import datetime
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+import time 
+
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+discovery_time = 5
+# log_file = Path('/home/DhananjayRpi/Desktop/log/device4.log')
+a=[]
+b=[]
+
+# def write_to_log(address, rssi):
+#     
+#     """Write device and rssi values to a log file"""
+#     now = datetime.now()
+#     current_time = now.strftime('%H:%M:%S')
+#     with log_file.open('a') as dev_log:
+#        
+#         dev_log.write(f'Device seen[{current_time}]: {address} @ {rssi} dBm\n')
+#         
+        
+   
+        
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+# class DeviceMonitor:
+#     """Class to represent remote bluetooth devices discovered"""
+#     def __init__(self, path_obj):
+        
+       
+        
+#         
+#         if rssi:
+#             print(f'Device added to monitor {self.device.Address} @ {rssi} dBm')
+#         else:
+#             print(f'Device added to monitor {self.device.Address}')
+
+# def prop_changed(iface, props_changed, props_removed):
+#     """method to be called when a property value on a device changes"""
+#     rssi = props_changed.get('RSSI', None)
+#     if rssi is not None:
+#         print(rssi)
+#         print(f'\tDevice Seen: {device.Address} @ {rssi} dBm')
+# #             if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+#         a.append(device.Address)
+#         b.append(rssi)
+# #             
+#         
+
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    if device_addr == TARGET_BLUETOOTH_ADDRESS:
+        while(1):
+    #         DeviceMonitor(path)
+            device = bus.get('org.bluez', path)
+    #         if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+#             device.onPropertiesChanged = prop_changed
+            rssi = device.GetAll('org.bluez.Device1').get('RSSI')
+            print(rssi)
+            a.append(device.Address)
+            b.append(rssi)
+            time.sleep(2)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+
+# # Iterate around already known devices and add to monitor
+# print('Adding already known device to monitor...')
+# mng_objs = mngr.GetManagedObjects()
+# for path in mng_objs:
+#     device = mng_objs[path].get('org.bluez.Device1', {}).get('Address', [])
+#     if device:
+#         asd = bus.get('org.bluez', path)
+#         rr=asd.GetAll('org.bluez.Device1').get('RSSI')
+#         print(rr)
+#         DeviceMonitor(path)
+
+# Run discovery for discovery_time
+adapter.StartDiscovery()
+GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+
+####################################################################################
+
+import dbus
+import RPi.GPIO as GPIO
+import time
+import GLib
+
+# Initialize GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+LED_PIN = 18
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Define the callback function for RSSI changes
+def rssi_callback(sender, object, iface, signal, params):
+    """Callback function for RSSI property changes."""
+    rssi = params[1]
+    print(f"Device {TARGET_BLUETOOTH_ADDRESS} RSSI: {rssi} dBm")
+    if rssi > -35:
+        GPIO.output(LED_PIN, GPIO.HIGH)
+    else:
+        GPIO.output(LED_PIN, GPIO.LOW)
+
+# Define the function to update the RSSI value of a specific Bluetooth device
+def update_rssi(device_addr):
+    """Update the RSSI value of a specific Bluetooth device every second."""
+    device_path = None
+    for path, iface_props in bus.get_object('org.bluez', '/').get_interfaces():
+        iface = iface_props.get('org.bluez.Device1', {})
+        if iface.get('Address') == device_addr:
+            device_path = path
+            break
+
+    if device_path is None:
+        print(f"Device with address {device_addr} not found.")
+        return
+
+    def update_loop():
+        """Update the RSSI value every second."""
+        while True:
+            time.sleep(1)
+            device_proxy = bus.get_object('org.bluez', device_path)
+            props_interface = dbus.Interface(device_proxy, 'org.freedesktop.DBus.Properties')
+            rssi = props_interface.Get('org.bluez.Device1', 'RSSI')
+            print(f"Device {device_addr} RSSI: {rssi} dBm")
+
+    props_interface.connect_to_signal('PropertiesChanged', rssi_callback)
+    update_loop()
+
+# Define the callback function for new interfaces
+def new_iface(path, iface_props):
+    """Callback function for new interfaces."""
+    iface = iface_props.get('org.bluez.Device1', {})
+    if iface.get('Address') == TARGET_BLUETOOTH_ADDRESS:
+        update_rssi(TARGET_BLUETOOTH_ADDRESS)Device {device
+
+# Define the_addr} R callback function for discovery state changes
+def discovery_state_changed(sender, object, iface, signalSSI: {rss, params):
+    """Callback function for discovery state changes."""
+    state = params[0]
+    if state == 'discovering':
+        print("Disi} dBmcovery started.")
+        adapter.Dis")
+
+covering = False
+        adapter.Dis    props_interface.connect_to_signal('PropertiesChanged', rssi_callback)
+    update_loop()
+
+# Define the callback function for new interfaces
+def new_iface(path, iface_props):
+    """Callback function for new interfaces."""
+    iface = iface_covering = True
+props.get('org.bluez.Device1', {})
+   
+# Initialize the main loop
+mainloop = GLib.MainLoop()
+
+# Initialize the bus
+bus = dbus.SystemBus(mainloop=mainloop)
+
+# if iface.get Get the BlueZ manager
+mngr = bus.get_object('org.bluez('Address') == TARGET_BLUET', '/')
+
+# Register the new_iface callback function
+mngr.onInterfacesAdded = new_iface
+
+# Get the BlueZ adapterOOTH_ADDRESS
+adapter = bus.get_object('org.bluez', '/org/bluez/hci0')
+
+#:
+        update_rssi(TARGET_BLUETOOTH_ADDRESS)
+
+# Define the callback function for discovery state changes
+def discovery_state_changed(sender, object, iface, signal Set the DuplicateData property to True to enable, params):
+    """Callback function for discovery state changes."""
+    state RSSI updates
+adapter.Du = params[0]
+    if state == 'discovering':
+        print("Discovery started.")
+       plicateData = True
+ adapter.Discovering = False
+        adapter.Discovering = True
+
+# Initialize the main loop
+mainloop = GLib.MainLoop()
+
+# Initialize the bus
+bus = dbus.SystemBus(mainloop=main
+# Connect to theloop)
+
+# DiscoveringPropertiesChanged Get the BlueZ manager
+mngr = bus.get_object('org.bluez', '/')
+
+# Register the new_iface callback function
+mngr.onInterfacesAdded = new_iface
+
+# Get the BlueZ adapter signal
+adapter.connect
+adapter = bus.get_object('org.bluez', '/org/bluez/hci0')
+
+# Set the DuplicateData_to_signal('DiscoveringPropertiesChanged property to True to enable RSSI updates
+adapter.DuplicateData = True
+
+# Connect to the DiscoveringPropertiesChanged signal
+adapter.connect_to_signal('DiscoveringPropertiesChanged', discovery_state_', discovery_state_changed)
+
+#changed)
+
+# Start discovery
+adapter.Discovering = True
+
+# Run the main Start discovery
+adapter.Discovering = True
+
+# Run the main loop
+try loop
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    main:
+    mainloop.run()
+except KeyboardInterrupt:
+    mainloop.quit()loop.quit()
+
+# Clean up GPIO
+GPIO.cleanup()
+
+
+#######################################################333ble.led1
+
+
+
+import RPi.GPIO as GPIO
+import bluetooth
+import subprocess
+from bluepy.btle import Scanner
+import pydbus
+import time
+####################################################################################################################################
+# Set up GPIO
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Set the desired TX power level (0 for minimum, 7 for maximum, adjust as needed)
+tx_power_level = 0
+# scanner=Scanner()
+#Minimum RSSI threshold to consider a device nearby (adjust as needed)
+min_rssi_threshold = -80  # Example threshold, in dBm
+
+#############################################################################################################################################
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+
+# Set the Bluetooth adapter's TX power level
+# subprocess.call(["sudo", "hcitool", "conup", "hci0"])
+# subprocess.call(["sudo", "hcitool", "lp", "hci0", "down"])
+# subprocess.call(["sudo", "hcitool", "lp", "hci0", "up"])
+# subprocess.call(["sudo", "hcitool", "rssi", "hci0"])
+# subprocess.call(["sudo", "hcitool", "txpower", "hci0", str(tx_power_level)])
+# output = subprocess.check_output(["sudo", "hcitool", "txpower", "hci0", str(tx_power_level)])
+# 
+# Print the output (optional, for debugging)
+# print(output.decode())
+# 
+
+def detect_mobile_device():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=2, lookup_names=False)
+#     rssi = nearby_devices.get('RSSI', None)
+    print(nearby_devices)
+#     devices = Scanner().scan(1)  # Scan for 10 seconds
+
+# Filter devices based on RSSI threshold
+#     nearby_devices = [(dev.addr, dev.rssi) for dev in devices if dev.rssi >= min_rssi_threshold]
+    # Check if the target device is in the list of nearby devices
+#     print(nearby_devices)
+    for addr in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS:
+            return True
+    return False
+if __name__ == "__main__":
+
+    while 1:
+        if detect_mobile_device():
+            GPIO.output(LED_PIN, GPIO.HIGH)
+            print("Mobile device detected. LED turned on.")
+        else:
+            GPIO.output(LED_PIN, GPIO.LOW)
+            print("Mobile device not detected. LED turned off.")
+
+
+###############################################ble.led1###################################################3
+
+from datetime import datetime
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+discovery_time = 60
+# log_file = Path('/home/DhananjayRpi/Desktop/log/device4.log')
+a=[]
+b=[]
+
+# def write_to_log(address, rssi):
+#     
+#     """Write device and rssi values to a log file"""
+#     now = datetime.now()
+#     current_time = now.strftime('%H:%M:%S')
+#     with log_file.open('a') as dev_log:
+#        
+#         dev_log.write(f'Device seen[{current_time}]: {address} @ {rssi} dBm\n')
+#         
+        
+   
+        
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+# class DeviceMonitor:
+#     """Class to represent remote bluetooth devices discovered"""
+#     def __init__(self, path_obj):
+        
+       
+        
+#         
+#         if rssi:
+#             print(f'Device added to monitor {self.device.Address} @ {rssi} dBm')
+#         else:
+#             print(f'Device added to monitor {self.device.Address}')
+
+def prop_changed(iface, props_changed, props_removed):
+    """method to be called when a property value on a device changes"""
+    rssi = props_changed.get('RSSI', None)
+    if rssi is not None:
+        print(rssi)
+#         print(f'\tDevice Seen: {device.Address} @ {rssi} dBm')
+# #             if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+#         a.append(device.Address)
+#         b.append(rssi)
+# #             
+#         
+
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    if device_addr == TARGET_BLUETOOTH_ADDRESS:
+#         DeviceMonitor(path)
+        device = bus.get('org.bluez', path)
+        print(device.Address)
+#         if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+        device.onPropertiesChanged = prop_changed
+        rssi = device.GetAll('org.bluez.Device1').get('RSSI')
+        a.append(device.Address)
+        b.append(rssi)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+
+# # Iterate around already known devices and add to monitor
+# print('Adding already known device to monitor...')
+# mng_objs = mngr.GetManagedObjects()
+# for path in mng_objs:
+#     device = mng_objs[path].get('org.bluez.Device1', {}).get('Address', [])
+#     if device:
+#         asd = bus.get('org.bluez', path)
+#         rr=asd.GetAll('org.bluez.Device1').get('RSSI')
+#         print(rr)
+#         DeviceMonitor(path)
+
+# Run discovery for discovery_time
+adapter.StartDiscovery()
+GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+######################################################################ble.led2#################################################
+
+from datetime import datetime
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+import time 
+
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+discovery_time = 5
+# log_file = Path('/home/DhananjayRpi/Desktop/log/device4.log')
+a=[]
+b=[]
+
+# def write_to_log(address, rssi):
+#     
+#     """Write device and rssi values to a log file"""
+#     now = datetime.now()
+#     current_time = now.strftime('%H:%M:%S')
+#     with log_file.open('a') as dev_log:
+#        
+#         dev_log.write(f'Device seen[{current_time}]: {address} @ {rssi} dBm\n')
+#         
+        
+   
+        
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+# class DeviceMonitor:
+#     """Class to represent remote bluetooth devices discovered"""
+#     def __init__(self, path_obj):
+        
+       
+        
+#         
+#         if rssi:
+#             print(f'Device added to monitor {self.device.Address} @ {rssi} dBm')
+#         else:
+#             print(f'Device added to monitor {self.device.Address}')
+
+# def prop_changed(iface, props_changed, props_removed):
+#     """method to be called when a property value on a device changes"""
+#     rssi = props_changed.get('RSSI', None)
+#     if rssi is not None:
+#         print(rssi)
+#         print(f'\tDevice Seen: {device.Address} @ {rssi} dBm')
+# #             if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+#         a.append(device.Address)
+#         b.append(rssi)
+# #             
+#         
+
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    if device_addr == TARGET_BLUETOOTH_ADDRESS:
+        while(1):
+    #         DeviceMonitor(path)
+            device = bus.get('org.bluez', path)
+    #         if (self.device.Address == "3C:A2:C3:6B:9C:E9"):
+#             device.onPropertiesChanged = prop_changed
+            rssi = device.GetAll('org.bluez.Device1').get('RSSI')
+            print(rssi)
+            a.append(device.Address)
+            b.append(rssi)
+            time.sleep(2)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+
+# # Iterate around already known devices and add to monitor
+# print('Adding already known device to monitor...')
+# mng_objs = mngr.GetManagedObjects()
+# for path in mng_objs:
+#     device = mng_objs[path].get('org.bluez.Device1', {}).get('Address', [])
+#     if device:
+#         asd = bus.get('org.bluez', path)
+#         rr=asd.GetAll('org.bluez.Device1').get('RSSI')
+#         print(rr)
+#         DeviceMonitor(path)
+
+# Run discovery for discovery_time
+adapter.StartDiscovery()
+GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+
+##################################################################################################################
+
+ble.led3
+
+
+
+
+from datetime import datetime
+import RPi.GPIO as GPIO
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+import time 
+
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+discovery_time = 60
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+a=[]
+b=[]    
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    if device_addr == TARGET_BLUETOOTH_ADDRESS:
+        start_time = time.time()  # Get the current time
+        while (time.time() - start_time < discovery_time):
+#         while(1):
+            device = bus.get('org.bluez', path)
+#             rssi = device.GetAll('org.bluez.Device1').get('RSSI')
+#             rssi = props_changed.get('RSSI', None)
+            rssi = device.Get('org.bluez.Device1', 'RSSI')
+            print(rssi)
+            a.append(device.Address)
+
+            b.append(rssi)
+            if rssi>-35:
+                GPIO.output(LED_PIN, GPIO.HIGH)
+#                 print("Mobile device detected. LED turned on.")
+            else:
+                GPIO.output(LED_PIN, GPIO.LOW)
+#                 print("Mobile device not detected. LED turned off.")
+            time.sleep(2)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+adapter.StartDiscovery()
+# GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+
+
+############################################################ble.led4#################################################3
+
+import dbus
+import RPi.GPIO as GPIO
+from gi.repository import GLib
+from pathlib import Path
+import pydbus
+from datetime import datetime
+import time
+
+# Replace with the target device's Bluetooth address
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"
+
+#Discovery time in seconds
+discovery_time = 60
+
+# LED pin number
+LED_PIN = 18
+
+# Initialize the GPIO library
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Connect to the D-Bus system bus
+bus = pydbus.SystemBus()
+
+# Create a main event loop
+mainloop = GLib.MainLoop()
+
+# Initialize lists to store discovered devices
+a=[]
+b=[]
+# Callback function for RSSI property changes
+# def rssi_callback(interface, changed_properties, invalidated_properties):
+#     """Callback function for RSSI property changes"""
+#     rssi = changed_properties.get('RSSI', None)
+#     if rssi is not None:
+#         print(f"RSSI: {rssi} dBm")
+#         if rssi > -35:
+#             GPIO.output(LED_PIN, GPIO.HIGH)
+#         else:
+#             GPIO.output(LED_PIN, GPIO.LOW)
+
+# def rssi_callback(sender, object, iface, signal, params):
+#     rssi = params[1]
+#     print(f"RSSI: {rssi} dBm")
+#     if rssi > -35:
+#         GPIO.output(LED_PIN, GPIO.HIGH)
+#     else:
+#         GPIO.output(LED_PIN, GPIO.LOW)
+
+
+def prop_changed(self, iface, props_changed, props_removed):
+        """method to be called when a property value on a device changes"""
+        rssi = props_changed.get('RSSI', None)
+        if rssi is not None:
+            print(f'\tDevice Seen: {self.device.Address} @ {rssi} dBm')
+            if rssi>-35:
+                GPIO.output(LED_PIN, GPIO.HIGH)
+#                 print("Mobile device detected. LED turned on.")
+            else:
+                GPIO.output(LED_PIN, GPIO.LOW)
+#                 print("Mobile device not detected. LED turned off.")
+            time.sleep(2)
+            
+
+
+# Callback function to be called whenever a new D-Bus interface is added
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+#     print(device_addr)
+    if device_addr == TARGET_BLUETOOTH_ADDRESS:
+        start_time = time.time()  # Get the current time
+        while (time.time() - start_time < discovery_time):
+#         while(1):
+            device = bus.get('org.bluez', path)
+            device.onPropertiesChanged = prop_changed
+            rssi = device.GetAll('org.bluez.Device1').get('RSSI')
+            
+#             rssi = device.Get('org.bluez.Device1', 'RSSI')
+            print(rssi)
+            a.append(device.Address)
+            b.append(rssi)
+            time.sleep(2)
+
+
+
+# Get the default Bluetooth adapter
+mngr = bus.get('org.bluez', '/')
+
+# Register the new_iface callback function
+mngr.onInterfacesAdded = new_iface
+
+# Get the default Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+
+# Set the DuplicateData property to True to enable RSSI updates
+adapter.DuplicateData = True
+
+# Start the Bluetooth discovery process
+adapter.StartDiscovery()
+
+# Run the main event loop
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    mainloop.quit()
+
+# Clean up the GPIO resources
+GPIO.cleanup()
+
+
+
+########################################3bluetooth_scanner.PY
+
+
+
+
+#!/usr/bin/env python
+from bt_proximity import BluetoothRSSI
+import datetime
+import time
+import threading
+import sys
+
+# List of bluetooth addresses to scan
+BT_ADDR_LIST = ["3C:A2:C3:6B:9C:E9"]
+DAILY = True  # Set to True to invoke callback only once per day per address
+DEBUG = True  # Set to True to print out debug messages
+THRESHOLD = (-10, 10)
+SLEEP = 1
+
+
+def dummy_callback():
+    print("Dummy callback function invoked")
+
+
+def bluetooth_listen(
+        addr, threshold, callback, sleep=1, daily=True, debug=False):
+    """Scans for RSSI value of bluetooth address in a loop. When the value is
+    within the threshold, calls the callback function.
+
+    @param: addr: Bluetooth address
+    @type: addr: str
+
+    @param: threshold: Tuple of integer values (low, high), e.g. (-10, 10)
+    @type: threshold: tuple
+
+    @param: callback: Callback function to invoke when RSSI value is within
+                      the threshold
+    @type: callback: function
+
+    @param: sleep: Number of seconds to wait between measuring RSSI
+    @type: sleep: int
+
+    @param: daily: Set to True to invoke callback only once per day
+    @type: daily: bool
+
+    @param: debug: Set to True to print out debug messages and does not 
+                   actually sleep until tomorrow if `daily` is True.
+    @type: debug: bool
+    """
+    b = BluetoothRSSI(addr=addr)
+    while True:
+        rssi = b.request_rssi()
+        if debug:
+            print("---")
+            print("addr: {}, rssi: {}".format(addr, rssi))
+        # Sleep and then skip to next iteration if device not found
+        if rssi is None:
+            time.sleep(sleep)
+            continue
+        # Trigger if RSSI value is within threshold
+        if threshold[0] < rssi[0] < threshold[1]:
+            callback()
+            if daily:
+                # Calculate the time remaining until next day
+                now = datetime.datetime.now()
+                tomorrow = datetime.datetime(
+                    now.year, now.month, now.day, 0, 0, 0, 0) + \
+                    datetime.timedelta(days=1)
+                until_tomorrow = (tomorrow - now).seconds
+                if debug:
+                    print("Seconds until tomorrow: {}".format(until_tomorrow))
+                else:
+                    time.sleep(until_tomorrow)
+        # Delay between iterations
+        time.sleep(sleep)
+
+
+def start_thread(addr, callback, threshold=THRESHOLD, sleep=SLEEP,
+                 daily=DAILY, debug=DEBUG):
+    """Helper function that creates and starts a thread to listen for the
+    bluetooth address.
+
+    @param: addr: Bluetooth address
+    @type: addr: str
+
+    @param: callback: Function to call when RSSI is within threshold
+    @param: callback: function
+
+    @param: threshold: Tuple of the high/low RSSI value to trigger callback
+    @type: threshold: tuple of int
+
+    @param: sleep: Time in seconds between RSSI scans
+    @type: sleep: int or float
+
+    @param: daily: Daily flag to pass to `bluetooth_listen` function
+    @type: daily: bool
+
+    @param: debug: Debug flag to pass to `bluetooth_listen` function
+    @type: debug: bool
+
+    @return: Python thread object
+    @rtype: threading.Thread
+    """
+    thread = threading.Thread(
+        target=bluetooth_listen,
+        args=(),
+        kwargs={
+            'addr': addr,
+            'threshold': threshold,
+            'callback': callback,
+            'sleep': sleep,
+            'daily': daily,
+            'debug': debug
+        }
+    )
+    # Daemonize
+    thread.daemon = True
+    # Start the thread
+    thread.start()
+    return thread
+
+
+def main():
+    if not BT_ADDR_LIST:
+        print("Please edit this file and set BT_ADDR_LIST variable")
+        sys.exit(1)
+    threads = []
+    for addr in BT_ADDR_LIST:
+        th = start_thread(addr=addr, callback=dummy_callback)
+        threads.append(th)
+    while True:
+        # Keep main thread alive
+        time.sleep(1)
+
+
+if __name__ == '__main__':
+    main()
+
+
+
+#############################################################test .py
+
+
+
+
+
+from bt_proximity import BluetoothRSSI
+import time
+import sys
+
+BT_ADDR = ''  # You can put your Bluetooth address here
+NUM_LOOP = 1
+
+
+def print_usage():
+    print(
+        "Usage: python test_address.py <bluetooth-address> [number-of-requests]")
+
+
+def main():
+    if len(sys.argv) > 1:
+        addr = sys.argv[1]
+    elif BT_ADDR:
+        addr = BT_ADDR
+    else:
+        print_usage()
+        return
+    if len(sys.argv) == 3:
+        num = int(sys.argv[2])
+    else:
+        num = NUM_LOOP
+    btrssi = BluetoothRSSI(addr=addr)
+    for i in range(0, num):
+        print(btrssi.request_rssi())
+        time.sleep(1)
+
+
+if __name__ == '__main__':
+    main()
+##############################################################################led2.py####################3
+
+
+import RPi.GPIO as GPIO
+import bluetooth
+import time
+
+# Set up GPIO
+LED_PIN = 18# Assuming the LED is connected to GPIO pin 17
+LED_pin=24
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.setup(LED_pin, GPIO.OUT)
+
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = ["3C:A2:C3:6B:9C:E9","2C:A7:EF:B3:90:5C"]  # Replace with the target device's Bluetooth address
+
+
+def detect_mobile_device():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=2, lookup_names=False)
+    # Check if the target device is in the list of nearby devices
+    print(nearby_devices)
+    for addr in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS[0]:
+            return True
+    return False
+
+def detect_mobile_device_1():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=2, lookup_names=False)
+    # Check if the target device is in the list of nearby devices
+    print(nearby_devices)
+    for addr in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS[1]:
+            return True
+    return False
+
+
+while 1:
+    if detect_mobile_device():
+        GPIO.output(LED_PIN, GPIO.HIGH)
+        print("Mobile device detected. LED turned on.")
+    else:
+        GPIO.output(LED_PIN, GPIO.LOW)
+        print("Mobile device not detected. LED turned off.")
+        
+    if detect_mobile_device_1():
+        GPIO.output(LED_pin, GPIO.HIGH)
+        print("Mobile device detected. LED turned on.")
+    else:
+        GPIO.output(LED_pin, GPIO.LOW)
+        print("Mobile device not detected. LED turned off.")
+
+# detect_mobile_device()
+
+
+
+############################################################333led1.py####################################
+
+
+
+import RPi.GPIO as GPIO
+import bluetooth
+import time
+
+# Set up GPIO
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+
+
+def detect_mobile_device():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=2, lookup_names=False)
+    # Check if the target device is in the list of nearby devices
+#     print(nearby_devices)
+    for addr in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS:
+            return True
+    return False
+
+while 1:
+    if detect_mobile_device():
+        GPIO.output(LED_PIN, GPIO.HIGH)
+        print("Mobile device detected. LED turned on.")
+    else:
+        GPIO.output(LED_PIN, GPIO.LOW)
+        print("Mobile device not detected. LED turned off.")
+
+
+
+####################################################3led.py##########################################333
+
+
+
+import RPi.GPIO as GPIO
+import bluetooth
+import time
+
+# Set up GPIO
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+
+def detect_mobile_device():
+    # Discover nearby Bluetooth devices
+    nearby_devices = bluetooth.discover_devices(duration=1, lookup_names=True)
+    # Check if the target device is in the list of nearby devices
+    for addr, name in nearby_devices:
+        if addr == TARGET_BLUETOOTH_ADDRESS:
+            return True
+    time.sleep(1)
+    return False
+if __name__ == "__main__":
+    while 1:
+        if detect_mobile_device():
+            GPIO.output(LED_PIN, GPIO.HIGH)
+            print("Mobile device detected. LED turned on.")
+        else:
+            GPIO.output(LED_PIN, GPIO.LOW)
+            print("Mobile device not detected. LED turned off.")
+
+
+
+####################################################ledref.py################################3
+
+
+
+import RPi.GPIO as GPIO
+import bluetooth
+import time
+
+# Set up GPIO
+LED_PIN = 18  # Assuming the LED is connected to GPIO pin 17
+GPIO.setmode(GPIO.BCM)
+lGPIO.setup(LED_PIN, GPIO.OUT)
+
+# Bluetooth address of the mobile device to detect
+TARGET_BLUETOOTH_ADDRESS = "3C:A2:C3:6B:9C:E9"  # Replace with the target device's Bluetooth address
+
+def detect_mobile_device():
+    while True:
+        try:
+            # Discover nearby Bluetooth devices
+            nearby_devices = bluetooth.discover_devices(duration=8, lookup_names=True)
+
+            # Check if the target device is in the list of nearby devices
+            for addr, name in nearby_devices:
+                if addr == TARGET_BLUETOOTH_ADDRESS:
+                    return True
+
+            # Wait before the next scan
+            time.sleep(10)
+        except KeyboardInterrupt:
+            break
+
+    return False
+
+def main():
+    try:
+        while True:
+            if detect_mobile_device():
+                # Mobile device detected, turn on the LED
+                GPIO.output(LED_PIN, GPIO.HIGH)
+                print("Mobile device detected. LED turned on.")
+            else:
+                # Mobile device not detected, turn off the LED
+                GPIO.output(LED_PIN, GPIO.LOW)
+                print("Mobile device not detected. LED turned off.")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Clean up GPIO
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    main()
+
+#############################################################rssipydbus.py########################################
+
+from datetime import datetime
+from pathlib import Path
+import pydbus
+from gi.repository import GLib
+
+discovery_time = 5
+log_file = Path('/home/DhananjayRpi/Desktop/log/device4.log')
+
+
+def write_to_log(address, rssi):
+    """Write device and rssi values to a log file"""
+    now = datetime.now()
+    current_time = now.strftime('%H:%M:%S')
+    with log_file.open('a') as dev_log:
+        dev_log.write(f'Device seen[{current_time}]: {address} @ {rssi} dBm\n')
+
+bus = pydbus.SystemBus()
+mainloop = GLib.MainLoop()
+
+class DeviceMonitor:
+    """Class to represent remote bluetooth devices discovered"""
+    def __init__(self, path_obj):
+        self.device = bus.get('org.bluez', path_obj)
+#         print(path_obj)
+#         print(self.device)
+        self.device.onPropertiesChanged = self.prop_changed
+        rssi = self.device.GetAll('org.bluez.Device1').get('RSSI')
+        if rssi:
+            print(f'Device added to monitor {self.device.Address} @ {rssi} dBm')
+        else:
+            print(f'Device added to monitor {self.device.Address}')
+
+    def prop_changed(self, iface, props_changed, props_removed):
+        """method to be called when a property value on a device changes"""
+        rssi = props_changed.get('RSSI', None)
+        if rssi is not None:
+            print(f'\tDevice Seen: {self.device.Address} @ {rssi} dBm')
+            write_to_log(self.device.Address, rssi)
+
+
+def end_discovery():
+    """method called at the end of discovery scan"""
+    mainloop.quit()
+    adapter.StopDiscovery()
+
+def new_iface(path, iface_props):
+    """If a new dbus interfaces is a device, add it to be  monitored"""
+    device_addr = iface_props.get('org.bluez.Device1', {}).get('Address')
+    print(path)
+    if device_addr:
+        DeviceMonitor(path)
+
+# BlueZ object manager
+mngr = bus.get('org.bluez', '/')
+mngr.onInterfacesAdded = new_iface
+
+# Connect to the DBus api for the Bluetooth adapter
+adapter = bus.get('org.bluez', '/org/bluez/hci0')
+adapter.DuplicateData = True
+
+# Iterate around already known devices and add to monitor
+print('Adding already known device to monitor...')
+mng_objs = mngr.GetManagedObjects()
+
+for path in mng_objs:
+    device = mng_objs[path].get('org.bluez.Device1', {}).get('Address', [])
+    if device:
+        DeviceMonitor(path)
+
+# Run discovery for discovery_time
+adapter.StartDiscovery()
+print("ddddddddddddddddddddddddddddddddddddddddddddddddd")
+GLib.timeout_add_seconds(discovery_time, end_discovery)
+print('Finding nearby devices...')
+try:
+    mainloop.run()
+except KeyboardInterrupt:
+    end_discovery()
+
+
+####################################################wifi#########################################333
+
+
+
+import subprocess
+
+def connect_to_wifi(ssid, password):
+    try:
+        # Generate the network configuration for wpa_supplicant
+        network_config = f'network={{\n  ssid="{ssid}"\n  psk="{password}"\n}}'
+
+        # Write the network configuration to a temporary file
+        with open('/tmp/wpa_supplicant.conf', 'w') as config_file:
+            config_file.write(network_config)
+
+        # Move the temporary file to the wpa_supplicant directory
+        subprocess.check_call(['sudo', 'mv', '/tmp/wpa_supplicant.conf', '/etc/wpa_supplicant/wpa_supplicant.conf'])
+
+        # Restart the wpa_supplicant service
+        subprocess.check_call(['sudo', 'systemctl', 'restart', 'wpa_supplicant'])
+
+        print(f"Connected to WiFi network: {ssid}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error connecting to WiFi network: {e}")
+
+# Replace 'YourWiFiSSID' and 'YourWiFiPassword' with your actual WiFi credentials
+wifi_ssid = 'PSTI'
+wifi_password = 'psti@123'
+
+connect_to_wifi(wifi_ssid, wifi_password)
+
+
+
+
+
+ 
