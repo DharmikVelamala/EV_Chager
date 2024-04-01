@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+
 from bt_proximity import BluetoothRSSI
 import datetime
 import time
 import threading
 import sys
+import bluetooth
 
 # List of bluetooth addresses to scan
 BT_ADDR_LIST = ["3C:A2:C3:6B:9C:E9"]
@@ -15,6 +16,39 @@ SLEEP = 1
 
 def dummy_callback():
     print("Dummy callback function invoked")
+
+def receiveMessages():
+    server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+    port = 1
+    try:
+        server_sock.bind(("", port))
+        server_sock.listen(1)
+
+        print("Waiting for connection on RFCOMM channel %d" % port)
+
+        client_sock, client_info = server_sock.accept()
+        print("Accepted connection from", client_info)
+
+        try:
+            while True:
+                data = client_sock.recv(1024)
+                if not data:
+                    break
+                print("Received:", data.decode('utf-8'))
+                a=str(data.decode('utf-8'))
+                print(a)
+                
+        except bluetooth.btcommon.BluetoothError as e:
+            print("Bluetooth connection error:", e)
+
+        finally:
+            client_sock.close()
+    except bluetooth.btcommon.BluetoothError as e:
+        print("Bluetooth socket error:", e)
+
+    finally:
+        server_sock.close()
+
 
 
 def bluetooth_listen(
@@ -54,8 +88,10 @@ def bluetooth_listen(
             continue
         # Trigger if RSSI value is within threshold
         if threshold[0] < rssi[0] < threshold[1]:
-            #callback()
-            '''if daily:
+            receiveMessages()
+            # Run the Bluetooth server to receive messages
+            '''callback()
+            if daily:
                 # Calculate the time remaining until next day
                 now = datetime.datetime.now()
                 tomorrow = datetime.datetime(
@@ -130,5 +166,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
