@@ -19,10 +19,11 @@ def dummy_callback():
 
 def receiveMessages():
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    port = 1
+    port = 2
     try:
         server_sock.bind(("", port))
         server_sock.listen(1)
+        time.sleep(5)
 
         print("Waiting for connection on RFCOMM channel %d" % port)
 

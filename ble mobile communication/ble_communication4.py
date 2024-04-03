@@ -2,9 +2,10 @@ import bluetooth
 
 def receiveMessages():
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    port = 1
+    port = 2
     server_sock.bind(("", port))
     server_sock.listen(1)
+    server_sock.settimeout(30)
 
     print("Waiting for connection on RFCOMM channel %d" % port)
 

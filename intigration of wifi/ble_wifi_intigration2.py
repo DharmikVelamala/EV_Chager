@@ -2,7 +2,6 @@ from bt_proximity import BluetoothRSSI
 import time
 import bluetooth
 import subprocess
-from bt_proximity import BluetoothRSSI
 import datetime
 import threading
 import sys
@@ -11,7 +10,7 @@ import sys
 BT_ADDR_LIST = []
 wifi_credentials = []
 duration = 10
-DEBUG=False
+DEBUG=True
 THRESHOLD = (-1, 20)
 
 def connect_to_wifi(ssid, password):
@@ -35,7 +34,7 @@ def connect_to_wifi(ssid, password):
 
 def receiveMessages():
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    port = 1
+    port = 3
     try:
         server_sock.bind(("", port))
         server_sock.listen(1)

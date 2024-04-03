@@ -30,10 +30,11 @@ def connect_to_wifi(ssid, password):
 
 def receiveMessages():
     server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    port = 1
+    port = 2
+    server_sock.bind(("", port))
+    server_sock.listen(1)
     try:
-        server_sock.bind(("", port))
-        server_sock.listen(1)
+        
         print("Waiting for connection on RFCOMM channel %d" % port)
 
         client_sock, client_info = server_sock.accept()
