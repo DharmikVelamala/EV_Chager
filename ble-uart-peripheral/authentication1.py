@@ -2,7 +2,7 @@ import bluetooth
 
 # Bluetooth server setup
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-port = 1  # RFCOMM port number
+port = 2  # RFCOMM port number
 
 server_sock.bind(("", port))
 server_sock.listen(1)
