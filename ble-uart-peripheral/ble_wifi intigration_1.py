@@ -5,6 +5,8 @@ from example_advertisement import Advertisement
 from example_advertisement import register_ad_cb, register_ad_error_cb
 from example_gatt_server import Service, Characteristic
 from example_gatt_server import register_app_cb, register_app_error_cb
+import subprocess
+from wifi import psti
 
 BLUEZ_SERVICE_NAME =           'org.bluez'
 DBUS_OM_IFACE =                'org.freedesktop.DBus.ObjectManager'
@@ -17,6 +19,7 @@ UART_TX_CHARACTERISTIC_UUID =  '6e400003-b5a3-f393-e0a9-e50e24dcca9e'
 LOCAL_NAME =                   'rpi-gatt-server'
 mainloop = None
 a=[]
+Wifi=psti()
 
 class TxCharacteristic(Characteristic):
     def __init__(self, bus, index, service):
@@ -62,7 +65,6 @@ class RxCharacteristic(Characteristic):
         data = bytearray(value).decode()
         print('Received: {}'.format(data))
         a.append(data)
-        print(a)
         # Store received data in a file with specific format
         with open('received_data.txt', 'a') as file:
             file.write(data + '\n')
@@ -76,6 +78,7 @@ def process_received_data(data):
     # Split the data into individual fields
     #fields = data.split(';')
     fields=a
+    #print(fields)
     # Extract information from the fields
     device_pin = fields[0]
     user_id = fields[1]
@@ -94,6 +97,9 @@ def process_received_data(data):
     battery_capacity = fields[14]
     vehicle_image = fields[15]
     efficiency_mileage = fields[16]
+    
+    wifi_flag=Wifi.connect_to(wifi_ssid.split("\r")[0],wifi_password.split("\r")[0])
+    print(wifi_flag)
     a.clear()
     # Format the information and store it in a specific format
     formatted_data = f"Device PIN: {device_pin}\n" \
@@ -117,7 +123,9 @@ def process_received_data(data):
     # Store the formatted data in a separate file
     with open('formatted_data.txt', 'a') as file:
         file.write(formatted_data + '\n')
-
+        
+    return wifi_flag
+		
 
 
         

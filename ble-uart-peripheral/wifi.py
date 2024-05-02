@@ -5,7 +5,7 @@ class psti:
         process = subprocess.run(['nmcli', '-t', '-f', 'ACTIVE,SSID', 'dev', 'wifi'], stdout=subprocess.PIPE)
         
         if process.returncode == 0:
-            a = process.stdout.decode('utf-8').strip().split(':')[1]
+            a = process.stdout.decode('utf-8').strip().split('yes:')[1]
             b = a.split("\n")[0]
             return b
         else:
@@ -40,5 +40,5 @@ class psti:
         subprocess.call(['nmcli', 'c', 'up', ssid])
         return self.is_connected_to(ssid)
 
-a=psti().connect_to("PSTI","psti@123")
-print(a)
+"""a=psti().connect_to("PSTI","psti@123")
+print(a)"""

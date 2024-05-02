@@ -3,7 +3,9 @@ import subprocess
 def what_wifi():
     process = subprocess.run(['nmcli', '-t', '-f', 'ACTIVE,SSID', 'dev', 'wifi'], stdout=subprocess.PIPE)
     if process.returncode == 0:
-        return process.stdout.decode('utf-8').strip().split(':')[1]
+        a = process.stdout.decode('utf-8').strip().split(':')[1]
+        b = a.split("\n")[0]
+        return b
     else:
         return ''
 
@@ -32,4 +34,5 @@ def connect_to_saved(ssid: str):
     subprocess.call(['nmcli', 'c', 'up', ssid])
     return is_connected_to(ssid)
 
-connect_to("dhanu","dhanu.pc")
+status=connect_to("PSTI","psti@123")
+print(status)

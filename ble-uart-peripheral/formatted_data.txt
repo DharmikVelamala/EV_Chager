@@ -33,3 +33,493 @@ Vehicle Image: 123
 Efficiency/Mileage: 123
 
 
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: 123
+
+Wi-Fi Password: 123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: 123
+
+Wi-Fi Password: 123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: 1234
+
+Wi-Fi Password: 1234
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 1234
+
+User ID: 1234
+
+User Rights: 1234
+
+User Name: 1234
+
+User Email: 1234
+
+Device MAC Address: 1234
+
+Vehicle Manufacturer: 1234
+
+Vehicle Model: 1234
+
+Vehicle Class: 1234
+
+Vehicle Variant: 1234
+
+Vehicle Color: 1234
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 1234
+
+Battery Capacity: 1234
+
+Vehicle Image: 1234
+
+Efficiency/Mileage: 1234
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
