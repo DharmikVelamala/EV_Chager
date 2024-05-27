@@ -1,0 +1,3 @@
+recursive-exclude tests *
+recursive-include ocpp/v16/schemas *.json
+recursive-include ocpp/v20/schemas *.json
