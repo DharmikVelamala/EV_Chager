@@ -5,8 +5,17 @@ import time
 import threading
 import sys
 
+try:
+    with open('mac_data.txt', 'r') as file:
+        mac_content = file.read()
+except FileNotFoundError:
+    print("The file 'example.txt' was not found.")
+except IOError:
+    print("An error occurred while reading the file.")
+
+BT_ADDR_LIST=mac_content.split("Saved bluetooth Mac address: ")[1].split("/n")[0]
+
 # List of bluetooth addresses to scan
-BT_ADDR_LIST = ["3C:A2:C3:6B:9C:E9"]
 DAILY = True  # Set to True to invoke callback only once per day per address
 DEBUG = True  # Set to True to print out debug messages
 THRESHOLD = (-40, 20)

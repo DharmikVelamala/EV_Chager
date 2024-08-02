@@ -1,35 +1,21 @@
-import bluepy.btle as btle
-import time
+from bluepy import bluepy as b
+from b import btle
+def get_rssi_values(target_addresses, scan_time=10):
+    scanner = btle.Scanner()
+    devices = scanner.scan(scan_time)
+    
+    rssi_values = {}
+    for device in devices:
+        if device.addr in target_addresses:
+            rssi_values[device.addr] = device.rssi
+    
+    return rssi_values
 
-# Create a BLE peripheral
-peripheral = btle.Peripheral()
-
-# Define standard Bluetooth SIG UUIDs for the Device Name characteristic
-device_name_char_uuid = btle.UUID("00002a00-0000-1000-8000-00805f9b34fb")
-
-# Create a new service for GAP
-gap_service = btle.Service()
-gap_service.setAssignedNumber(btle.UUID("00001800-0000-1000-8000-00805f9b34fb"))
-
-# Create a new characteristic for Device Name within the GAP service
-device_name_char = gap_service.addCharacteristic(device_name_char_uuid, btle.Characteristic.READ)
-device_name_char.set_value("RaspberryPi_BLE")
-
-# Add the GAP service to the peripheral
-peripheral.add_service(gap_service)
-
-# Start advertising as a BLE peripheral
-peripheral.advertise(btle.AdvertisingData(
-    btle.AdvertisingFlags.general_discoverable | btle.AdvertisingFlags.br_edr_not_supported,
-    name="RaspberryPi_BLE"
-))
-
-print("Advertising as 'RaspberryPi_BLE'...")
-
-try:
-    # Keep advertising for a specified duration (e.g., 30 seconds)
-    time.sleep(30)
-finally:
-    # Stop advertising and clean up
-    peripheral.stop_advertising()
-    peripheral.disconnect()
+if __name__ == "__main__":
+    BT_ADDR_LIST = ["3C:A2:C3:6B:9C:E9", "00:1A:7D:DA:71:13"]  # Replace with your target MAC addresses
+    scan_duration = 10  # Scan duration in seconds
+    
+    rssi_results = get_rssi_values(BT_ADDR_LIST, scan_duration)
+    
+    for addr, rssi in rssi_results.items():
+        print(f"MAC Address: {addr}, RSSI: {rssi} dBm")

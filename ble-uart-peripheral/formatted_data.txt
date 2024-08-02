@@ -90,41 +90,6 @@ Vehicle Variant: 123
 
 Vehicle Color: 123
 
-Wi-Fi SSID: 123
-
-Wi-Fi Password: 123
-
-Timestamp: 123
-
-Battery Capacity: 123
-
-Vehicle Image: 123
-
-Efficiency/Mileage: 123
-
-
-Device PIN: 123
-
-User ID: 123
-
-User Rights: 123
-
-User Name: 123
-
-User Email: 123
-
-Device MAC Address: 123
-
-Vehicle Manufacturer: 123
-
-Vehicle Model: 123
-
-Vehicle Class: 123
-
-Vehicle Variant: 123
-
-Vehicle Color: 123
-
 Wi-Fi SSID: PSTI
 
 Wi-Fi Password: psti@123
@@ -513,6 +478,181 @@ Vehicle Color: 123
 Wi-Fi SSID: PSTI
 
 Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: 123
+
+Wi-Fi Password: 123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: dharmik
+
+User ID: dharmik
+
+User Rights: dharmik
+
+User Name: dharmik
+
+User Email: dharmik
+
+Device MAC Address: dharmik
+
+Vehicle Manufacturer: dharmik
+
+Vehicle Model: dharmik
+
+Vehicle Class: dharmik
+
+Vehicle Variant: dharmik
+
+Vehicle Color: dharmik
+
+Wi-Fi SSID: dharmik
+
+Wi-Fi Password: dharmik
+
+Timestamp: dharmik
+
+Battery Capacity: dharmik
+
+Vehicle Image: dharmik
+
+Efficiency/Mileage: dharmik
+
+
+Device PIN: PSTI
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: dhanu
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: PSTI
+
+Wi-Fi Password: psti@123
+
+Timestamp: 123
+
+Battery Capacity: 123
+
+Vehicle Image: 123
+
+Efficiency/Mileage: 123
+
+
+Device PIN: 123
+
+User ID: 123
+
+User Rights: 123
+
+User Name: 123
+
+User Email: 123
+
+Device MAC Address: 123
+
+Vehicle Manufacturer: 123
+
+Vehicle Model: 123
+
+Vehicle Class: 123
+
+Vehicle Variant: 123
+
+Vehicle Color: 123
+
+Wi-Fi SSID: 123
+
+Wi-Fi Password: 123
 
 Timestamp: 123
 

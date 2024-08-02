@@ -7,7 +7,6 @@ from example_gatt_server import Service, Characteristic
 from example_gatt_server import register_app_cb, register_app_error_cb
 import subprocess
 from wifi import psti
-import dataHandler
 
 BLUEZ_SERVICE_NAME =           'org.bluez'
 DBUS_OM_IFACE =                'org.freedesktop.DBus.ObjectManager'
@@ -23,23 +22,19 @@ a=[]
 Wifi=psti()
 
 class TxCharacteristic(Characteristic):
+    #print("Dhanu",Characteristic)
     def __init__(self, bus, index, service):
         Characteristic.__init__(self, bus, index, UART_TX_CHARACTERISTIC_UUID,
                                 ['notify'], service)
         self.notifying = False
         GLib.io_add_watch(sys.stdin, GLib.IO_IN, self.on_console_input)
-        self.predefined_value = "Predefined message"  # your predefined message
 
     def on_console_input(self, fd, condition):
         s = fd.readline()
         if s.isspace():
             pass
         else:
-            # Check for specific message(s) and send predefined value if matched
-            if s.strip() == "specific message":
-                self.send_tx(self.predefined_value)
-            else:
-                self.send_tx(s)
+            self.send_tx(s)
         return True
 
     def send_tx(self, s):
@@ -61,31 +56,24 @@ class TxCharacteristic(Characteristic):
         self.notifying = False
 
 class RxCharacteristic(Characteristic):
-    def __init__(self, bus, index, service, tx_characteristic):
+    #print("dharmik",Characteristic)
+    def __init__(self, bus, index, service):
         Characteristic.__init__(self, bus, index, UART_RX_CHARACTERISTIC_UUID,
                                 ['write'], service)
-        self.tx_characteristic = tx_characteristic
+
     def WriteValue(self, value, options):
         
         #print('remote: {}'.format(bytearray(value).decode()))
         data = bytearray(value).decode()
         print('Received: {}'.format(data))
         a.append(data)
-        #self.value_res=dataHandler.Authorization(data)
-        if data.strip().lower() == "dharmik":
-            self.send_predefined_response()
-        else:
-            value_res = dataHandler.Authorization(data)
-            self.tx_characteristic.send_tx(value_res)
-
         # Store received data in a file with specific format
         with open('received_data.txt', 'a') as file:
             file.write(data + '\n')
-        if len(a)==17:
+        if len(a)==18:
         # Process and extract information from the received data
             process_received_data(a)
-    def send_predefined_response(self):
-        self.tx_characteristic.send_tx(self.tx_characteristic.predefined_value)
+        
         
 
 def process_received_data(data):
@@ -144,7 +132,7 @@ def process_received_data(data):
     with open('formatted_data.txt', 'a') as file:
         file.write(formatted_data + '\n')
         
-    return wifi_flag
+   # return wifi_flag
 		
 
 
@@ -153,9 +141,8 @@ def process_received_data(data):
 class UartService(Service):
     def __init__(self, bus, index):
         Service.__init__(self, bus, index, UART_SERVICE_UUID, True)
-        tx_characteristic = TxCharacteristic(bus, 0, self)
-        self.add_characteristic(tx_characteristic)
-        self.add_characteristic(RxCharacteristic(bus, 1, self, tx_characteristic))
+        self.add_characteristic(TxCharacteristic(bus, 0, self))
+        self.add_characteristic(RxCharacteristic(bus, 1, self))
 
 class Application(dbus.service.Object):
     def __init__(self, bus):
